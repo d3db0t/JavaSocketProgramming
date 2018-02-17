@@ -47,8 +47,27 @@ public class Sthread extends Thread{
 
         clientSentence = (String) ois.readObject();
         System.out.println(this.threaduser.getUsername() + " wrote " + clientSentence);
+        String clientString = (String) clientSentence;
 
-        
+        if (clientString.charAt(0) == '@') // User to chat with
+        {
+          String[] usermsg      = clientString.split(" "); // Usertochatwith + msg
+          String usertochatwith = usermsg[0].substring(1); // Username
+          String msg            = usermsg[1];
+          int socketIndex       = this.server.getUserSocket(usertochatwith);
+          if (socketIndex == -1)
+          {
+            this.oos = new ObjectOutputStream(socket.getOutputStream());
+            oos.writeObject("[-] Error: Unable to find user"); 
+          }
+          else
+          {
+            Socket s = this.server.getSockets().get(socketIndex);
+            this.oos = new ObjectOutputStream(s.getOutputStream());
+            oos.writeObject(this.threaduser.getUsername() + ": " + msg); 
+          }
+        }
+
         if (clientSentence.equals("ClientExitCommand"))
         {
           flag = false;
@@ -69,6 +88,7 @@ public class Sthread extends Thread{
     {
       flag = false;
       System.out.println(threaduser.getUsername() + " Disconnected");
+      System.out.print(e);
     }
 
   }

@@ -86,7 +86,23 @@ public class Server {
         if (username.equals(this.users.get(i).getUsername()))
         {
           this.users.remove(i);
+          this.sockets.remove(i);
         }
       }
+    }
+
+    public int getUserSocket(String username)
+    {
+      int index = -1; // No user by default
+      for (int i = 0; i < this.users.size();i++)
+      {
+        if (this.users.get(i).getUsername().equals(username))
+        {
+          index = i;
+          break;
+        }
+      }
+
+      return index;
     }
   }
