@@ -3,8 +3,9 @@ import java.net.*;
 import java.util.*;
 
 public class Server {
-  public static final int PORT = 6666;
-  public static ArrayList<User> users = new ArrayList<User>();
+  public static final int PORT            = 6666;
+  public static ArrayList<User> users     = new ArrayList<User>();
+  public static ArrayList<Socket> sockets = new ArrayList<Socket>();
 
   Server(){}
 
@@ -49,20 +50,33 @@ public class Server {
     public void sendOnlineUsers(ObjectOutputStream oos, String username) throws Exception
     {
       ArrayList<String> a = new ArrayList<String>();
+      int numOfUsers      = -1;
       for (int i = 0; i < users.size();i++)
       {
         if (!username.equals(users.get(i).getUsername()))
         {
           a.add(users.get(i).getUsername());
         }
+        numOfUsers++;
       }
-
-      oos.writeObject(mytoString(a, "\n") + "\n" + ">> ");
+      if(numOfUsers == 0)
+      {
+        oos.writeObject("Online Users: " + numOfUsers + "\n" + "You are the only one :)");
+      }
+      else
+      {
+        oos.writeObject("Online Users:" + numOfUsers + "\n" + mytoString(a, "\n"));
+      }
     }
 
     public ArrayList<User> getUsers()
     {
       return this.users;
+    }
+
+    public ArrayList<Socket> getSockets()
+    {
+      return this.sockets;
     }
 
     public void removeOnlineUser(String username)

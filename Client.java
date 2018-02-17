@@ -25,15 +25,20 @@ class Client {
         oos.flush();
         //oos.reset();
 
+        // ClientReceivingThread
+        try
+        {
+          new ClientReceivingThread(clientSocket).start();
+        }
+        catch(Exception e)
+        {
+          System.out.println("[-] Receiving Thread Failed!");
+        }
+
         
         while(flag)
         {
-
-          ois = new ObjectInputStream(clientSocket.getInputStream());
-
-          serverResponse = (String) ois.readObject();
-
-          System.out.print(serverResponse);
+          System.out.print(">> ");
 
           BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
 

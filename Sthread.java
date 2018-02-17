@@ -26,6 +26,10 @@ public class Sthread extends Thread{
       this.threaduser = user;
       System.out.println(user.getUsername() + " Connected");
       this.server.getUsers().add(user);
+      this.server.getSockets().add(this.socket);
+
+      this.oos = new ObjectOutputStream(socket.getOutputStream());
+      this.server.sendOnlineUsers(oos, this.threaduser.getUsername());
     }
     catch(Exception e)
     {
@@ -38,8 +42,6 @@ public class Sthread extends Thread{
       
       while(flag)
       {
-        this.oos = new ObjectOutputStream(socket.getOutputStream());
-        this.oos.writeObject(">> ");
 
         this.ois = new ObjectInputStream(socket.getInputStream());
 
