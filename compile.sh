@@ -1,5 +1,9 @@
 javac Client.java;
-javac Server.java;
-javac Sthread.java;
+javac MainServer.java;
+javac MainServerThread.java;
 javac User.java;
-javac ClientReceivingThread.java
+javac Packet.java;
+javac ClientReceivingThread.java;
+javac ServerA.java;
+javac SConnectThread.java
+

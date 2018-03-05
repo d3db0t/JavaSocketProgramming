@@ -2,29 +2,46 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class Server {
-  public static final int PORT            = 6666;
+public class ServerA {
+  public static final int PORT            = 7777;
+  public static final int MAINSERVERPORT  = 6666;
   public static ArrayList<User> users     = new ArrayList<User>();
   public static ArrayList<Socket> sockets = new ArrayList<Socket>();
+  public static Socket mainServerSocket;
 
-  Server(){}
+  ServerA(){}
 
   public static void main(String argv[]) throws Exception
     {
-      new Server().runServer();
+
+      new ServerA().runServer();
     }
 
     public void runServer() throws IOException
     {
       ServerSocket welcomeSocket = new ServerSocket(PORT);
-      System.out.println("Server is up and running...");
+      System.out.println("ServerA is up and running...");
+      boolean flag = true;
+      while(flag)
+      {
+        try
+        {
+          Socket firsSocket = welcomeSocket.accept();
+          mainServerSocket = firsSocket;
+          flag = false;
+        }
+        catch(Exception e)
+        {
+          continue;
+        }
+      }
       while(true)
       {
         Socket socket = welcomeSocket.accept();
 
         try
         {
-          new Sthread(socket).start();
+          new MainServerThread(socket).start();
         }
         catch(Exception e)
         {
@@ -71,22 +88,22 @@ public class Server {
 
     public ArrayList<User> getUsers()
     {
-      return this.users;
+      return users;
     }
 
     public ArrayList<Socket> getSockets()
     {
-      return this.sockets;
+      return sockets;
     }
 
     public void removeOnlineUser(String username)
     {
-      for (int i = 0; i < this.users.size();i++)
+      for (int i = 0; i < users.size();i++)
       {
-        if (username.equals(this.users.get(i).getUsername()))
+        if (username.equals(users.get(i).getUsername()))
         {
-          this.users.remove(i);
-          this.sockets.remove(i);
+          users.remove(i);
+          sockets.remove(i);
         }
       }
     }
@@ -94,9 +111,9 @@ public class Server {
     public int getUserSocket(String username)
     {
       int index = -1; // No user by default
-      for (int i = 0; i < this.users.size();i++)
+      for (int i = 0; i < users.size();i++)
       {
-        if (this.users.get(i).getUsername().equals(username))
+        if (users.get(i).getUsername().equals(username))
         {
           index = i;
           break;

@@ -2,15 +2,15 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class Sthread extends Thread{
+public class MainServerThread extends Thread{
   Socket socket;
   User threaduser;
-  static Server server = new Server();
+  static MainServer server = new MainServer();
   Boolean flag = true;
   ObjectInputStream ois;
   ObjectOutputStream oos;
 
-  Sthread(Socket socket)
+  MainServerThread(Socket socket)
   {
     this.socket = socket;
   }
@@ -25,11 +25,11 @@ public class Sthread extends Thread{
       User user       = (User) ois.readObject();
       this.threaduser = user;
       System.out.println(user.getUsername() + " Connected");
-      this.server.getUsers().add(user);
-      this.server.getSockets().add(this.socket);
+      server.getUsers().add(user);
+      server.getSockets().add(this.socket);
 
       this.oos = new ObjectOutputStream(socket.getOutputStream());
-      this.server.sendOnlineUsers(oos, this.threaduser.getUsername());
+      server.sendOnlineUsers(oos, this.threaduser.getUsername());
     }
     catch(Exception e)
     {
@@ -54,7 +54,7 @@ public class Sthread extends Thread{
           String[] usermsg      = clientString.split(" "); // Usertochatwith + msg
           String usertochatwith = usermsg[0].substring(1); // Username
           String msg            = usermsg[1];
-          int socketIndex       = this.server.getUserSocket(usertochatwith);
+          int socketIndex       = server.getUserSocket(usertochatwith);
           if (socketIndex == -1)
           {
             this.oos = new ObjectOutputStream(socket.getOutputStream());
@@ -62,7 +62,7 @@ public class Sthread extends Thread{
           }
           else
           {
-            Socket s = this.server.getSockets().get(socketIndex);
+            Socket s = server.getSockets().get(socketIndex);
             this.oos = new ObjectOutputStream(s.getOutputStream());
             oos.writeObject(this.threaduser.getUsername() + ": " + msg); 
           }
@@ -71,14 +71,14 @@ public class Sthread extends Thread{
         if (clientSentence.equals("ClientExitCommand"))
         {
           flag = false;
-          this.server.removeOnlineUser(this.threaduser.getUsername());
+          server.removeOnlineUser(this.threaduser.getUsername());
           socket.close();
         }
 
         if (clientSentence.equals("listusers"))
         {
           this.oos = new ObjectOutputStream(socket.getOutputStream());
-          this.server.sendOnlineUsers(oos, this.threaduser.getUsername());
+          server.sendOnlineUsers(oos, this.threaduser.getUsername());
         }
         
         

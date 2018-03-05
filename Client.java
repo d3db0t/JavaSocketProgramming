@@ -3,12 +3,33 @@ import java.net.*;
 import java.util.*;
 
 class Client {
-  public static final int PORT = 6666;
+  public static int PORT = 6666;
   static ObjectInputStream ois;
   static ObjectOutputStream oos;
 
     public static void main(String argv[]) throws Exception
     {
+      try
+      {
+        if (!argv[1].equals(null))
+        {
+          String server   = argv[1];
+          if (server.equals("ServerA"))
+          {
+            PORT = 7777;
+            System.out.println("Connecting to ServerA...");
+          }
+          else if (server.equals("MainServer"))
+          {
+            System.out.println("Connecting to MainServer...");
+          }
+        }
+      }
+      catch(Exception e)
+      {
+        System.out.println("No Server specified, connecting to MainServer...");
+      }
+        
         String username = argv[0];
         String sentence;
         Object serverResponse;
