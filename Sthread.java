@@ -46,8 +46,11 @@ public class Sthread extends Thread{
         this.ois = new ObjectInputStream(socket.getInputStream());
 
         clientSentence = (String) ois.readObject();
-        System.out.println(this.threaduser.getUsername() + " wrote " + clientSentence);
+        System.out.println(this.threaduser.getUsername() + " Sent:\n" + clientSentence);
         String clientString = (String) clientSentence;
+
+        Queue<String> queue = new LinkedList<>();
+        queue.add(clientString);
 
         if (clientString.charAt(0) == '@') // User to chat with
         {
