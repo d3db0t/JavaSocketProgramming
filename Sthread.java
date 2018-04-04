@@ -1,6 +1,10 @@
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
+import java.text.*;
 import java.util.*;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 public class Sthread extends Thread{
   Socket socket;
@@ -9,6 +13,8 @@ public class Sthread extends Thread{
   Boolean flag = true;
   ObjectInputStream ois;
   ObjectOutputStream oos;
+  static File rootdir = new File("docroot");
+  static String[] allfiles = rootdir.list();
 
   Sthread(Socket socket)
   {
@@ -28,8 +34,8 @@ public class Sthread extends Thread{
       this.server.getUsers().add(user);
       this.server.getSockets().add(this.socket);
 
-      this.oos = new ObjectOutputStream(socket.getOutputStream());
-      this.server.sendOnlineUsers(oos, this.threaduser.getUsername());
+      //this.oos = new ObjectOutputStream(socket.getOutputStream());
+      //this.server.sendOnlineUsers(oos, this.threaduser.getUsername());
     }
     catch(Exception e)
     {
@@ -51,6 +57,73 @@ public class Sthread extends Thread{
 
         Queue<String> queue = new LinkedList<>();
         queue.add(clientString);
+
+        String filename = clientString.split(" ")[1]; // File name + format
+        String format = filename.split("\\.")[1]; // format
+        
+        filename = filename.substring(1, filename.length());
+        System.out.println(filename);
+
+        boolean foundfile = false;
+
+        for(int j = 0; j <allfiles.length; j++){
+            if(allfiles.length == 0)
+            {
+              break;
+            }
+            if(filename.equals(allfiles[j]))
+            {
+              foundfile = true;
+            }
+            
+        }
+        System.out.println(foundfile);
+        DateFormat df = new SimpleDateFormat("yyyy/dd/MM HH:mm:ss");
+        Date d = new Date();
+        String st = df.format(d);
+
+        if(!foundfile) // File not found 
+        {
+          ResponseObject ro = new ResponseObject("404 NOT FOUND/1.1\n" + st + "\n" + format + "\nkeep-alive");
+          this.oos = new ObjectOutputStream(socket.getOutputStream());
+          oos.writeObject(ro);         
+        }
+        else if (foundfile) // file found
+        {
+          FileReader filer = new FileReader("docroot/" + filename); // get file
+          if (format.equals("txt")) // text file
+          {
+            BufferedReader br = new BufferedReader(filer);
+            String readline;
+            String fileLines = "";
+            while((readline = br.readLine()) != null)
+            {
+                fileLines = fileLines + readline + "\n";
+            }
+
+            ResponseObject ro = new ResponseObject("200 OK /1.1\n" + st + "\n" + format + "\nkeep-alive", fileLines, format, filename);
+            this.oos = new ObjectOutputStream(socket.getOutputStream());
+            oos.writeObject(ro);
+
+          }
+
+          else if (format.equals("jpeg") || format.equals("png")) // image
+          {
+            File ff = new File("docroot/" + filename);
+            BufferedImage bi = ImageIO.read(ff); // reading file
+            ImageIcon ii = new ImageIcon(bi); // parsing image
+            ResponseObject ro = new ResponseObject("200 OK /1.1\n" + st + "\n" + format + "\nkeep-alive", ii, format, filename);
+            this.oos = new ObjectOutputStream(socket.getOutputStream());
+            oos.writeObject(ro);
+          }
+           
+        }
+
+
+
+
+
+
 
         if (clientString.charAt(0) == '@') // User to chat with
         {

@@ -19,8 +19,27 @@ public class ClientReceivingThread extends Thread{
             while(flag)
             {
                 this.ois   = new ObjectInputStream(socket.getInputStream());
-                String serverResponse = (String) ois.readObject();
-                System.out.println(serverResponse);
+                ResponseObject serverResponse = (ResponseObject) ois.readObject();
+                char statuscode = serverResponse.getReq().charAt(0);
+                if (statuscode == '4')
+                {
+                    System.out.println(serverResponse.getReq());
+                    System.out.println("File not found!");
+                }
+                else if (serverResponse.getFormat().equals("txt")) // text file
+                {
+                    String text = (String) serverResponse.getFile();
+                    PrintWriter pw = new PrintWriter("userfiles/" + serverResponse.getFilename());
+                    pw.println(text);
+                    pw.close();
+                }
+                /*
+                else if (serverResponse.getFormat().equals("jpeg") || serverResponse.getFormat().equals("png"))
+                {
+
+                }
+                */
+                // System.out.println(serverResponse);
                 System.out.print(">> ");
                 //this.ois.reset();
             }
