@@ -39,20 +39,8 @@ class Client {
         while(flag)
         {
           System.out.print(">> ");
-
           BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-
           sentence = inFromUser.readLine();
-          String method = sentence.split(" ")[0]; // method (GET)
-          //System.out.println(method);
-          String file = sentence.split(" ")[1]; // File name + format
-          //System.out.println(file);
-          String format = file.split("\\.")[1]; // format
-          //System.out.println(format);
-          
-          sentence = method + " /" + file + " /1.1\n" + "Host: localhost\n"
-          + "Accepted format: " + format + "\n" + "Connection: keep-alive";
-          System.out.println(sentence);
 
           if(sentence.equals("Exit"))
           {
@@ -63,9 +51,28 @@ class Client {
           }
           else
           {
+              String method = sentence.split(" ")[0]; // method (GET)
+            //System.out.println(method);
+            String file = sentence.split(" ")[1]; // File name + format
+            //System.out.println(file);
+            String format = file.split("\\.")[1]; // format
+            //System.out.println(format);
+            
+            sentence = method + " /" + file + " /1.1\n" + "Host: localhost\n"
+            + "Accepted format: " + format + "\n" + "Connection: keep-alive";
+            System.out.println(sentence);
+
             oos = new ObjectOutputStream(clientSocket.getOutputStream()); 
             oos.writeObject(sentence);
           }
+
+          
+          
+
+          
+          
+            
+      
       }
 
       
