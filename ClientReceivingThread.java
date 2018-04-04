@@ -1,6 +1,10 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.awt.Image;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import javax.swing.*;
 
 public class ClientReceivingThread extends Thread{
     Socket socket;
@@ -33,13 +37,31 @@ public class ClientReceivingThread extends Thread{
                     pw.println(text);
                     pw.close();
                 }
-                /*
+                
                 else if (serverResponse.getFormat().equals("jpeg") || serverResponse.getFormat().equals("png"))
                 {
+                    File out = new File("userfiles/" + serverResponse.getFilename());
+                    if (serverResponse.getFormat().equals("png"))
+                    {
+                        ImageIcon ii = (ImageIcon) serverResponse.getFile();
+                        Image image = ii.getImage();
+                        BufferedImage buffered = (BufferedImage) image;
+                        // ImageIO.write(bufferedImage,"png",file);
+                        ImageIO.write(buffered ,"png",out);
+                    }
+                    else if (serverResponse.getFormat().equals("jpeg"))
+                    {
+                        ImageIcon ii = (ImageIcon) serverResponse.getFile();
+                        Image image = ii.getImage();
+                        BufferedImage buffered = (BufferedImage) image;
+                        // ImageIO.write(bufferedImage,"png",file);
+                        ImageIO.write(buffered ,"jpeg",out);
+                    }
+                    
 
                 }
-                */
-                // System.out.println(serverResponse);
+                
+                System.out.println(serverResponse.getReq());
                 System.out.print(">> ");
                 //this.ois.reset();
             }
